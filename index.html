@@ -129,7 +129,7 @@
           </div>
           <div class="col card-group">
             <div class="card">
-              <img src="/img/neki.jpeg" class="card-img-top" alt="kaneki" />
+              <img src="/img/neki.jpg" class="card-img-top" alt="kaneki" />
               <div class="card-body">
                 <h5 class="card-title">Aylen</h5>
                 <p class="card-text">ini adalah kaneki versi black reaper, ganteng amat pake kacamata begitu</p>
@@ -177,23 +177,36 @@
         </div>
         <div class="row justify-content-center">
           <div class="col-md-8">
-            <form>
+            <div class="alert alert-success alert-dismissible fade show d-none my-alert" role="alert">
+              <strong>arigatou!</strong> pesannya udah terkirim ya <i class="bi bi-emoji-kiss"></i>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <form name="contact-form">
+              <div class="mb-3 p-3">
+                <label for="email" class="form-label mb-0">email</label>
+                <input type="text" class="form-control" id="email" aria-describedby="email" name="email" />
+              </div>
               <div class="mb-3 p-3">
                 <label for="name" class="form-label">isi nama ya</label>
-                <input type="text" class="form-control" id="name" aria-describedby="name" />
+                <input type="text" class="form-control" id="name" aria-describedby="name" name="nama" />
                 <div id="name" class="form-text">diisi nama yang benar ya kakak-kakak</div>
               </div>
               <div class="mb-3 p-3">
                 <label for="alen" class="form-label">kelebihan</label>
-                <input type="text" class="form-control" id="alen" aria-describedby="alen" />
+                <input type="text" class="form-control" id="alen" aria-describedby="alen" name="kelebihan" />
                 <div id="alen" class="form-text">ceritain kelebihan kamu apa, klo gada berarti beban</div>
               </div>
               <div class="mb-3 p-3">
                 <label for="exampleFormControlTextarea1" class="form-label">for aylen</label>
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="pesan"></textarea>
                 <div id="alen" class="form-text">kesan dan pesan untuk adik tercinta kalian ini</div>
               </div>
-              <button type="submit" class="btn btn-secondary">Kirim Disini</button>
+              <button type="submit" class="btn btn-primary btn-kirim">kirim lah</button>
+
+              <button class="btn btn-secondary btn-loading d-none" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <span role="status">kejap ye...</span>
+              </button>
             </form>
           </div>
         </div>
@@ -207,5 +220,39 @@
     </footer>
     <!-- akhir footer -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- script untuk form konek ke googlesheet -->
+    <script>
+      const scriptURL = "https://script.google.com/macros/s/AKfycbyadCGz_9klh8uLxWP2OgakoxaR7lwZBJIU1hkCmxJI19qxIWPCxgtbxrLRlejJYz_J/exec";
+      //menangkap form dengan document.forms dengan nama dari form adalah contact-form
+      const form = document.forms["contact-form"];
+
+      //document.querySelector = mencari class dengan nama btn-kirim, btn-loading dan alert
+      const btnKirim = document.querySelector(".btn-kirim");
+      const btnLoading = document.querySelector(".btn-loading");
+      const myAlert = document.querySelector(".my-alert");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        //ketika tombol submit di klik
+        //tampilkan tombol loading, hilang tombol kirim
+        //carikan elemen yang nmanya btnLoading, kalau udh ketemu liat didalam classlistnya ada ga class yang namanya d-none. kalau ada hilangkan kalau ga ada tambahkan (fungsi toggle)
+        btnLoading.classList.toggle("d-none");
+        btnKirim.classList.toggle("d-none");
+
+        fetch(scriptURL, { method: "POST", body: new FormData(form) })
+          .then((response) => {
+            //tampilkan tombol kirim, hilangkan tombol loading
+            btnLoading.classList.toggle("d-none");
+            btnKirim.classList.toggle("d-none");
+            //menampilkan alert
+            myAlert.classList.toggle("d-none");
+            //reset formnya
+            form.reset();
+            console.log("Success!", response);
+          })
+          .catch((error) => console.error("Error!", error.message));
+      });
+    </script>
   </body>
 </html>
